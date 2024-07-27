@@ -34,6 +34,8 @@ button {
     padding: 10px;
 }
       </style>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js" integrity="sha512-11t8Q+vY9JlCrr+PveZKTYJq8n7O09Y5X/pk/aMd3vJugSvu4xOunGEUzaADqL3I8cZKE/pBwwCfXzDkRJh2sQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+     
 </head>
 <body>
       <form>
@@ -45,29 +47,34 @@ button {
 
       </ul>
 
-
-      <script defer>
-            const socket = new WebSocket('ws:localhost:8080')
-            const sendMessage = (e) => {
-                  e.preventDefault()
-                  const input = document.querySelector('input')
-                  
-                  if(input.value){
-                        socket.send(input.value)
-                        input.value = ""
-                  }
-                  input.focus()
+      <script>
+            
+            const socket = io('ws://localhost:3500')
+    
+            function sendMessage(e) {
+                e.preventDefault()
+                const input = document.querySelector('input')
+                if (input.value) {
+                    socket.emit('message', input.value)
+                    input.value = ""
+                }
+                input.focus()
             }
 
-            document.querySelector('form')
-            .addEventListener('submit', sendMessage)
 
-            //listen for message
-            socket.addEventListener("message", ({data }) => {
-                  const li = document.createElement('li')
-                  li.textContent = data
-                  document.querySelector('ul').appendChild(li)
+            document.querySelector('form').addEventListener('submit', sendMessage)
+            
+            // Listen for messages 
+            socket.on("message", (data) => {
+                const li = document.createElement('li')
+                li.textContent = data
+                document.querySelector('ul').appendChild(li)
             })
-      </script>
+            
+            
+            
+            
+          </script>
+
 </body>
 </html>
